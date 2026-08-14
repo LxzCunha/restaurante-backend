@@ -1,0 +1,28 @@
+{
+  "name": "projeto-restaurante",
+  "version": "1.0.0",
+  "description": "Projeto Back-end UniSenai",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LxzCunha/restaurante-backend.git"
+  },
+  "author": "Alexandre Cunha",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/LxzCunha/restaurante-backend/issues"
+  },
+  "homepage": "https://github.com/LxzCunha/restaurante-backend#readme",
+  "devDependencies": {
+    "@types/node": "^26.2.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}

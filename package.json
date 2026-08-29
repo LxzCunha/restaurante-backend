@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/server.ts",
+    "dev": "node --watch --env-file=.env --import=tsx/esm watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js"
   },
@@ -26,6 +26,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.112.4",
     "@types/express": "^5.0.6",
     "express": "^5.2.1"
   }

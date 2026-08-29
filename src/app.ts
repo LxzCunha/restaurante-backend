@@ -5,22 +5,22 @@ const app = express();
 
 app.use(express.json());
 
-const idCategoriasPizza = randomUUID();
-const idCategoriasBebidas = randomUUID();
-const idCategoriasEntradas = randomUUID();
-const idCategoriasSobremesas = randomUUID();
+const idPizzaCategory = randomUUID();
+const idDrinkCategory = randomUUID();
+const idEntriesCategory = randomUUID();
+const idDessertsCategory = randomUUID();
 
-const categorias = [
-    { id: idCategoriasEntradas, name: "Entradas", description: "Pratos leves para começar a refeição" },
-    { id: idCategoriasPizza, name: "Pratos Principais", description: "Pratos principais do cardápio" },
-    { id: idCategoriasSobremesas, name: "Sobremesas", description: "Doces e sobremesas para finalizar a refeição" },
+const categories = [
+    { id: idEntriesCategory, name: "Entradas", description: "Pratos leves para começar a refeição" },
+    { id: idPizzaCategory, name: "Pratos Principais", description: "Pratos principais do cardápio" },
+    { id: idDessertsCategory, name: "Sobremesas", description: "Doces e sobremesas para finalizar a refeição" },
 ];
 
-const produtos = [
-    { id: randomUUID(), name: "Pizza Margherita", category_id: idCategoriasPizza, price: 45.90, description: "Molho de tomate, mussarela, manjericão fresco e azeite" },
-    { id: randomUUID(), name: "Pizza Calabresa", category_id: idCategoriasPizza, price: 48.90, description: "Molho de tomate, mussarela, calabresa fatiada e cebola" },
-    { id: randomUUID(), name: "Bruschetta", category_id: idCategoriasEntradas, price: 22.50, description: "Fatias de pão italiano tostado com tomate, alho e manjericão" },
-    { id: randomUUID(), name: "Tiramisù", category_id: idCategoriasSobremesas, price: 18.00, description: "Sobremesa italiana com café, mascarpone e cacau" },
+const products = [
+    { id: randomUUID(), name: "Pizza Margherita", category_id: idPizzaCategory, price: 45.90, description: "Molho de tomate, mussarela, manjericão fresco e azeite" },
+    { id: randomUUID(), name: "Pizza Calabresa", category_id: idPizzaCategory, price: 48.90, description: "Molho de tomate, mussarela, calabresa fatiada e cebola" },
+    { id: randomUUID(), name: "Bruschetta", category_id: idEntriesCategory, price: 22.50, description: "Fatias de pão italiano tostado com tomate, alho e manjericão" },
+    { id: randomUUID(), name: "Tiramisù", category_id: idDessertsCategory, price: 18.00, description: "Sobremesa italiana com café, mascarpone e cacau" },
 ];
 
 app.get("/", (req, res) => {
@@ -34,35 +34,69 @@ app.get("/", (req, res) => {
 CATEGORIAS
 */
 
-app.get("/categorias", (req, res) => {
-    res.status(200).json(categorias);
+app.get("/categories", (req, res) => {
+    res.status(200).json(categories);
 });
 
-app.post("/categorias", (req, res) => {
-    const categoria = {
+app.post("/categories", (req, res) => {
+    const category = {
         id: randomUUID(),
         ...req.body,
     }
 
-    categorias.push(categoria);
+    categories.push(category);
 
-    res.status(201).json(categoria);
+    res.status(201).json(category);
 });
 
-app.get("/categorias/:id", (req, res) => {
-    const categoria = categorias.find((categoria => {
-        return categoria.id == req.params.id;
+app.get("/categories/:id", (req, res) => {
+    const category = categories.find((category => {
+        return category.id == req.params.id;
     }));
 
-    if(!categoria) {
+    if(!category) {
         return res.status(404).json({
             message: "Não foi possível encontrar a categoria."
         });
     }
 
-    res.status(200).json(categoria);
+    res.status(200).json(category);
 });
 
+app.put("/categories/:id", (req, res) => {
+    const category = categories.find((category => {
+        return category.id == req.params.id;
+    }));
+
+    if(!category) {
+        return res.status(404).json({
+            message: "Não foi possível encontrar a categoria."
+        });
+    }
+
+    category.name = req.body.name;
+    category.description = req.body.description;
+
+    res.status(200).json(category);
+});
+
+app.delete("/categories/:id", (req, res) => {
+    const category = categories.find((category => {
+        return category.id == req.params.id;
+    }));
+
+    if(!category) {
+        return res.status(404).json({
+            message: "Não foi possível encontrar a categoria."
+        });
+    }
+
+    const index = categories.indexOf(category);
+    categories.splice(index, 1);
+    res.status(200).json({
+        message: "Categoria removida."
+    });
+});
 
 /*
 
@@ -70,29 +104,70 @@ PRODUTOS
 
 */
 
-app.get("/produtos", (req, res) => {
-    res.status(200).json(produtos)
+app.get("/products", (req, res) => {
+    res.status(200).json(products)
 });
 
-app.post("/produtos", (req, res) => {
-    const produto = req.body;
-    produtos.push(produto);
+app.post("/products", (req, res) => {
+    const product = {
+        id: randomUUID(),
+        ...req.body
+    };
+    products.push(product);
 
-    res.status(201).json(produto);
+    res.status(201).json(product);
 });
 
-app.get("/produtos/:id", (req, res) => {
-    const produto = produtos.find((produto => {
-        return produto.id == req.params.id;
+app.get("/products/:id", (req, res) => {
+    const product = products.find((product => {
+        return product.id == req.params.id;
     }));
 
-    if(!produto) {
+    if(!product) {
         res.status(404).json({
             message: "Não foi possível encontrar o produto."
         })
     };
 
-    res.status(200).json(produto);
+    res.status(200).json(product);
+});
+
+app.put("/products/:id", (req, res) => {
+    const product = products.find((product) => {
+        return product.id == req.params.id;
+    });
+
+    if(!product) {
+        return res.status(404).json({
+            message: "Não foi possível encontrar o produto."
+        })
+    };
+
+    product.category_id = req.body.category_id;
+    product.name = req.body.name;
+    product.description = req.body.description;
+    product.price = req.body.price;
+
+    res.status(200).json(product);
+})
+
+app.delete("/products/:id", (req, res) => {
+    const product = products.find((product) => {
+        return product.id == req.params.id;
+    });
+
+    if(!product) {
+        return res.status(404).json({
+            message: "Não foi possível encontrar o produto."
+        })
+    };
+
+    const index = products.indexOf(product);
+    products.splice(index, 1);
+
+    res.status(200).json({
+        message:"Produto excluído com sucesso."
+    });
 })
 
 export default app;

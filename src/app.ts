@@ -176,7 +176,7 @@ app.delete("/products/:id", (req, res) => {
 
 app.get("/test-supabase", async (req, res) => {
     const {data, error} = await supabase.
-    from("categorias")
+    from("categories")
     .select("*");
     
     if(error) {

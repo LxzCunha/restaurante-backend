@@ -26,7 +26,85 @@ async function findById(id: string) {
     return data;
 }
 
+async function create(product:{
+    title: string;
+    description: string;
+    price: number;
+    avaible:boolean;
+    active:boolean
+    image:string;
+    category_id: string;
+}) {
+    const { data, error} = await supabase
+    .from("products")
+    .insert(product)
+    .select()
+    .single();
+
+    if(error) {
+        throw error;
+    }
+
+    return data;
+}
+
+async function update(
+    id: string,
+    product:{
+    title: string;
+    description: string;
+    price: number;
+    avaible:boolean;
+    active:boolean
+    image:string;
+    category_id: string;
+}) {
+    const { data, error} = await supabase
+    .from("products")
+    .update(product)
+    .eq("id", id)
+    .select()
+    .single();
+
+    if(error) {
+        throw error;
+    }
+
+    return data;
+}
+
+async function searchByKeyword(keyword: string) {
+    const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .or(`title.ilike.%${keyword}%,description.ilike.%${keyword}%`);
+
+    if(error) {
+        throw error;
+    }
+
+    return data;
+}
+
+async function remove(id: string) {
+    const{data, error} = await supabase
+    .from("products")
+    .delete()
+    .eq("id", id)
+    .single();
+
+    if(error){
+        throw error;
+    }
+
+    return data;
+}
+
 export default {
     findAll, 
-    findById
+    findById,
+    create,
+    update,
+    remove, 
+    searchByKeyword
 }

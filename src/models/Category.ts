@@ -1,46 +1,45 @@
 import supabase from "../config/supabase.js";
 
 async function findAll() {
-    const{data, error} = await supabase
-    .from("categories")
-    .select("*");
+    const { data, error } = await supabase
+        .from("categories")
+        .select("*");
 
-    if(error) {
+    if (error) {
         throw error;
     }
 
-    console.log(data)
     return data;
 }
 
 async function findById(id: string) {
-    const{data, error} = await supabase
-    .from("categories")
-    .select("*")
-    .eq("id", id)
-    .single();
+    const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("id", id)
+        .single();
 
-    if(error){
+    if (error) {
         throw error;
     }
 
     return data;
 }
 
-async function create(category:{
+async function create(category: {
     name: string;
     description: string;
     icon: string;
-    display_order:number;
-    active:boolean;
+    display_order: number;
+    active: boolean;
 }) {
-    const { data, error} = await supabase
-    .from("categories")
-    .insert(category)
-    .select()
-    .single();
+    const { data, error } = await supabase
+        .from("categories")
+        .insert(category)
+        .select()
+        .single();
 
-    if(error) {
+    if (error) {
         throw error;
     }
 
@@ -50,20 +49,20 @@ async function create(category:{
 async function update(
     id: string,
     category: {
-    name: string;
-    description: string;
-    icon: string;
-    display_order:number;
-    active:boolean;
-}) {
-    const { data, error} = await supabase
-    .from("categories")
-    .update(category)
-    .eq("id", id)
-    .select()
-    .single();
+        name: string;
+        description: string;
+        icon: string;
+        display_order: number;
+        active: boolean;
+    }) {
+    const { data, error } = await supabase
+        .from("categories")
+        .update(category)
+        .eq("id", id)
+        .select()
+        .single();
 
-    if(error) {
+    if (error) {
         throw error;
     }
 
@@ -71,13 +70,13 @@ async function update(
 }
 
 async function remove(id: string) {
-    const{data, error} = await supabase
-    .from("categories")
-    .delete()
-    .eq("id", id)
-    .select();
+    const { data, error } = await supabase
+        .from("categories")
+        .delete()
+        .eq("id", id)
+        .single();
 
-    if(error){
+    if (error) {
         throw error;
     }
 
@@ -86,11 +85,12 @@ async function remove(id: string) {
 
 async function searchByKeyword(keyword: string) {
     const { data, error } = await supabase
-    .from("categories")
-    .select("*")
-    .or(`name.ilike.%${keyword}%,description.ilike.%${keyword}%`);
+        .from("categories")
+        .select("*")
+        .or(`name.ilike.%${keyword}%, description.ilike.%${keyword}%`)
+        .order("display_order", { ascending: true });
 
-    if(error) {
+    if (error) {
         throw error;
     }
 

@@ -1,4 +1,5 @@
 import supabase from "../config/supabase.js";
+import { NotFoundError } from "../errors/NotFoundError.js";
 import { Category } from "../models/Category.js";
 
 async function findAll() {
@@ -22,6 +23,10 @@ async function findById(id: string): Promise<Category> {
 
     if (error) {
         throw error;
+    }
+
+    if(!data) {
+        throw new NotFoundError("Categoria não encontrada.");
     }
 
     return Category.restore(
@@ -86,6 +91,10 @@ async function remove(id: string) {
 
     if (error) {
         throw error;
+    }
+
+    if(!data) {
+        throw new NotFoundError("Categoria não encontrada.");
     }
 
     return data;

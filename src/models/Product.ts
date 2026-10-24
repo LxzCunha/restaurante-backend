@@ -1,110 +1,101 @@
-import supabase from "../config/supabase.js";
+import { ValidationError } from "../errors/ValidationError.js";
 
-async function findAll() {
-    const{data, error} = await supabase
-    .from("products")
-    .select("*");
+export class Product {
+    private id?: string | undefined;
+    private category_id: string;
+    private title: string;
+    private description: string | undefined;
+    private price: number;
+    private image: string | undefined;
+    private avaible: boolean;
+    private active: boolean;
 
-    if(error) {
-        throw error;
+    constructor(title: string, category_id: string, price: number, description?: string, image?: string) {
+        this.id = undefined;
+        this.category_id = "";
+        this.title = "";
+        this.description = description;
+        this.price = 0;
+        this.image = image;
+        this.avaible = true;
+        this.active = true;
+
+        this.rename(title);
+        this.changeCategory(category_id);
+        this.changePrice(price);
     }
 
-    return data;
-}
+    static restore(id: string, title: string, category_id: string, price: number, active: boolean, avaible: boolean, description: string, image: string): Product {
+        const product = new Product(title, category_id, price, description, image);
 
-async function findById(id: string) {
-    const{data, error} = await supabase
-    .from("products")
-    .select("*")
-    .eq("id", id)
-    .single();
+        product.id = id;
+        product.active = active;
+        product.avaible = avaible;
 
-    if(error){
-        throw error;
+        return product;
     }
 
-    return data;
-}
-
-async function create(product:{
-    title: string;
-    description: string;
-    price: number;
-    avaible:boolean;
-    active:boolean
-    image:string;
-    category_id: string;
-}) {
-    const { data, error} = await supabase
-    .from("products")
-    .insert(product)
-    .select()
-    .single();
-
-    if(error) {
-        throw error;
+    public getId(): string | undefined {
+        return this.id;
+    }
+    public getTitle(): string {
+        return this.title;
+    }
+    public getDescription(): string | undefined {
+        return this.description;
+    }
+    public getCategoryId(): string {
+        return this.category_id;
+    }
+    public getPrice(): number {
+        return this.price;
+    }
+    public getImage(): string | undefined {
+        return this.image;
+    }
+    public isAvaible(): boolean {
+        return this.avaible;
+    }
+    public isActive(): boolean {
+        return this.active;
     }
 
-    return data;
-}
-
-async function update(
-    id: string,
-    product:{
-    title: string;
-    description: string;
-    price: number;
-    avaible:boolean;
-    active:boolean
-    image:string;
-    category_id: string;
-}) {
-    const { data, error} = await supabase
-    .from("products")
-    .update(product)
-    .eq("id", id)
-    .select()
-    .single();
-
-    if(error) {
-        throw error;
+    rename(title: string): void {
+        if(typeof(title) != 'string' || title.trim().length == 0) {
+            throw new ValidationError("O nome do produto é obrigatório.");
+        }
+        this.title = title.trim();
+    }
+    changeCategory(category_id: string): void {
+        if(typeof(category_id) != 'string' || category_id.trim().length == 0) {
+            throw new ValidationError("A categoria do produto é obrigatória.");
+        }
+        this.category_id = category_id;
+    }
+    changeDescription(description: string): void {
+        this.description = description;
+    }
+    changeImage(image: string): void {
+        this.image = image;
+    }
+    changePrice(price: number): void {
+        if(!Number.isFinite(price) || price < 0) {
+            throw new ValidationError("O preço do produto deve ser um número positivo.");
+        }
+        this.price = price;
     }
 
-    return data;
-}
-
-async function searchByKeyword(keyword: string) {
-    const { data, error } = await supabase
-    .from("products")
-    .select("*")
-    .or(`title.ilike.%${keyword}%,description.ilike.%${keyword}%`);
-
-    if(error) {
-        throw error;
+    activate(): void {
+        this.active = true;
+    }
+    deactivate(): void {
+        this.active = false;
     }
 
-    return data;
-}
-
-async function remove(id: string) {
-    const{data, error} = await supabase
-    .from("products")
-    .delete()
-    .eq("id", id)
-    .single();
-
-    if(error){
-        throw error;
+    turnAvaible(): void {
+        this.avaible = true;
     }
-
-    return data;
-}
-
-export default {
-    findAll, 
-    findById,
-    create,
-    update,
-    remove, 
-    searchByKeyword
+    notAvaible(): void {
+        this.avaible = false;
+    }
 }
